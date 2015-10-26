@@ -325,9 +325,6 @@ func (b *Bucket) Delete(key []byte) error {
 	// Delete the node if we have a matching key.
 	c.node().del(key)
 
-	// Rebalance the bucket.
-	b.rebalance()
-
 	return nil
 }
 

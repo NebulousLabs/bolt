@@ -230,6 +230,11 @@ func (c *Cursor) next() (key []byte, value []byte, flags uint32) {
 	// first element of the first leaf page.
 	c.stack = c.stack[:i+1]
 	c.first()
+
+	if c.stack[len(c.stack)-1].count() == 0 {
+		return c.next()
+	}
+
 	return c.keyValue()
 }
 
