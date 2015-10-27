@@ -38,6 +38,9 @@ func (c *Cursor) First() (key []byte, value []byte) {
 	if (flags & uint32(bucketLeafFlag)) != 0 {
 		return k, nil
 	}
+	if k == nil && v == nil && flags == 0 {
+		k, v, flags = c.next()
+	}
 	return k, v
 
 }
