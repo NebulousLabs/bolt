@@ -73,4 +73,6 @@ var (
 // MmapError represents an error resulting from a failed mmap call. Typically,
 // this error means that no further database writes will be possible. The most
 // common cause is insufficient disk space.
-type MmapError error
+type MmapError string
+
+func (e MmapError) Error() string { return string(e) }

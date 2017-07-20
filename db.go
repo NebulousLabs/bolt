@@ -337,7 +337,7 @@ func (db *DB) mmap(minsz int) error {
 		if err2 := mmap(db, db.datasz); err2 != nil {
 			panic(fmt.Sprintf("failed to revert db size after failed mmap: %v", err2))
 		}
-		return MmapError(err)
+		return MmapError(err.Error())
 	}
 
 	// Save references to the meta pages.
