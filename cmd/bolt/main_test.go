@@ -12,8 +12,8 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/boltdb/bolt"
-	"github.com/boltdb/bolt/cmd/bolt"
+	"github.com/NebulousLabs/bolt"
+	"github.com/NebulousLabs/bolt/cmd/bolt"
 )
 
 // Ensure the "info" command can print information about a database.
