@@ -79,7 +79,7 @@ package main
 import (
 	"log"
 
-	"github.com/boltdb/bolt"
+	"github.com/NebulousLabs/bolt"
 )
 
 func main() {
