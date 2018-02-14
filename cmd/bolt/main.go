@@ -19,7 +19,7 @@ import (
 	"unicode/utf8"
 	"unsafe"
 
-	bolt "github.com/coreos/bbolt"
+	bolt "github.com/NebulousLabs/bolt"
 )
 
 var (

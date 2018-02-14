@@ -8,7 +8,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/coreos/bbolt"
+	"github.com/NebulousLabs/bolt"
 )
 
 // TestTx_Check_ReadOnly tests consistency checking on a ReadOnly database.
