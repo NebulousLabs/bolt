@@ -575,6 +575,63 @@ func TestTx_CopyFile(t *testing.T) {
 	}
 }
 
+// Ensure that the database can flush pages during normal operation without
+// crashing.
+func TestTx_FlushDBPages(t *testing.T) {
+	db := MustOpenDB()
+	defer db.MustClose()
+
+	if err := db.Update(func(tx *bolt.Tx) error {
+		b, err := tx.CreateBucket([]byte("widgets"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := b.Put([]byte("foo"), []byte("bar")); err != nil {
+			t.Fatal(err)
+		}
+		if err := b.Put([]byte("baz"), []byte("bat")); err != nil {
+			t.Fatal(err)
+		}
+		return nil
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := db.Update(func(tx *bolt.Tx) error {
+		return tx.FlushDBPages()
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	// Flush concurrently with a read and write
+	errs := make(chan error)
+	go func() {
+		errs <- db.Update(func(tx *bolt.Tx) error {
+			return tx.FlushDBPages()
+		})
+	}()
+	go func() {
+		errs <- db.Update(func(tx *bolt.Tx) error {
+			return tx.Bucket([]byte("widgets")).Put([]byte("foo"), []byte("quux"))
+		})
+	}()
+	go func() {
+		errs <- db.View(func(tx *bolt.Tx) error {
+			_ = tx.Bucket([]byte("widgets")).Get([]byte("foo"))
+			return nil
+		})
+	}()
+	for i := 0; i < 3; i++ {
+		if err := <-errs; err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	if err := db.Close(); err != nil {
+		t.Fatal(err)
+	}
+}
+
 type failWriterError struct{}
 
 func (failWriterError) Error() string {

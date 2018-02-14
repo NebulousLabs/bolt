@@ -380,6 +380,18 @@ func (tx *Tx) CopyFile(path string, mode os.FileMode) error {
 	return f.Close()
 }
 
+// FlushDBPages unmaps and re-mmaps the db file, flushing all of the DB's
+// pages from resident memory. It returns an error if called from a read-only
+// transaction.
+func (tx *Tx) FlushDBPages() error {
+	if tx.db == nil {
+		return ErrTxClosed
+	} else if !tx.writable {
+		return ErrTxNotWritable
+	}
+	return tx.db.mmap(tx.db.datasz)
+}
+
 // Check performs several consistency checks on the database for this transaction.
 // An error is returned if any inconsistency is found.
 //
